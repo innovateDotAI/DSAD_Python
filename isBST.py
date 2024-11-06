@@ -27,16 +27,17 @@ def isValid(node,min,max,dict1):
     else:
         dict1[node.data] = True
         print(f'Node={node.data} checked and valid BST node')
-        isValid(node.left,min,node.data,dict1)
-        isValid(node.right,node.data,max,dict1)
-    #print(dict1)
+    return isValid(node.left,min,node.data,dict1) and isValid(node.right,node.data,max,dict1)
+def validateBST(root):
+    min = float('-inf')
+    max = float('inf')
+    node = root
+    dict1 = isValid(node,min,max,{})
+    print(f'BST Element status: {dict1}')
     for val in dict1.values():
         if val == False:
-            print(f"All Node status:{dict1}")
             return False
-    #print(f"All Node status:{dict1}")
-    return True
-    
+    return True    
 
 
        
@@ -44,14 +45,12 @@ if __name__=="__main__":
     print("Hello World")
     root = node(15)
     root.left = node(4)
-    root.right = node(21)
-    # root.left.left = node(3)
-    # root.left.right = node(7)
-    # root.left.right.left = node(6)
-    # root.left.right.right = node(8)
-    # root.right.left = node(17)
-    # root.right.right = node(29)
+    root.right = node(11)
+    root.left.left = node(3)
+    root.left.right = node(7)
+    root.left.right.left = node(6)
+    root.left.right.right = node(8)
+    root.right.left = node(17)
+    root.right.right = node(29)
     print(root.data)
-    min = float('-inf')
-    max = float('inf')
-    print(isValid(root,min,max,{}))
+    print(f'Given BST Tree is {validateBST(root)}')
