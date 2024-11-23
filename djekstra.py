@@ -25,34 +25,48 @@ def viewGrpah(G):
     plt.axis("off")
     plt.tight_layout()
     plt.show()
-def dijkstra(G,s,vNode=[]):
-    minDict = {}
+def dijkstra(G,s,minCost,vNode=[]):
+    print(f"My start node is {s}")
     vNode.append(s)
-    nList = [n for n in G.neighbors(s)]
-    is_subset = set(nList).issubset(set(vNode))
-    if is_subset:
+    del minCost[s]
+    
+    print(f"vNode= {vNode}")
+    print(f"G.nodes={list(G.nodes)}")
+    if len(vNode) == len(list(G.nodes)):
         return
     sc = nx.get_node_attributes(G,"cost")[s]
+    print(f"For Node(sc) {s}, cost is {sc}")
     for n in G.neighbors(s):
         if n not in vNode:
+            print(f"My current node is {n}")
             nc = nx.get_node_attributes(G,"cost")[n]
-            ec = nx.get_edge_attributes(G,'weight')[(s,n)]
-            print(f"For edge:({s},{n}), weight = {ec}")
-            print(f"For Node {n}, cost is {nc}")
-            if nc > sc+ec:
+            print(f" current cost Node(nc) {n}, is {nc}")
+            try:
+                ec = nx.get_edge_attributes(G,'weight')[(s,n)]
+            except:
+                ec = nx.get_edge_attributes(G,'weight')[(n,s)]
+            print(f"For edge:({s},{n}) attribute is , weight = {ec}")
+            print(f"Cost of sc+ec = {sc+ec}")
+            if nc > (sc+ec):
                 nc = sc+ec
-                nx.set_node_attributes(G, nc, "cost")
-            minDict[n] = nc
+                G.nodes[n]["cost"] = nc
+                #nx.set_node_attributes(G, nc, "cost")
+                print(f"My new cost of node {n} is {nc}")
+                minCost[n] = nc
+            else:
+                print(f"No change in cost of {n}")
 
-    s = min(minDict, key=minDict.get)
-    dijkstra(G,s)
+    s = min(minCost, key=minCost.get)
+    dijkstra(G,s,minCost)
 if __name__=="__main__":
-    edge_list = [(0,1,4),(0,7,8),(1,2,8),(1,7,11),(7,6,1),(7,8,7),(2,3,7),(2,8,2),(2,5,4),(6,8,6),(6,5,2),(5,4,10),(5,3,14),(4,3,9)]
+    edge_list = [(0,1,4),(0,7,8),(1,2,8),(1,7,3),(7,6,1),(7,8,7),(2,3,7),(2,8,2),(2,5,4),(6,8,6),(6,5,2),(5,4,10),(5,3,14),(4,3,9)]
     node_list = [(0,{'cost':0}),(1,{'cost':float('inf')}),(2,{'cost':float('inf')}),(3,{'cost':float('inf')}),(4,{'cost':float('inf')}),(5,{'cost':float('inf')}),(6,{'cost':float('inf')}),(7,{'cost':float('inf')}),(8,{'cost':float('inf')})]
     G = nx.Graph()
     G.add_nodes_from(node_list)
     G.add_weighted_edges_from(edge_list)
+    #viewGrpah(G)
     print(nx.get_node_attributes(G,"cost")[0])
     print(nx.get_edge_attributes(G,'weight')[(0,1)])
-    dijkstra(G,0)
-    viewGrpah(G)
+    minCost = nx.get_node_attributes(G,"cost")
+    dijkstra(G,0,minCost)
+    print(nx.get_node_attributes(G,"cost"))
